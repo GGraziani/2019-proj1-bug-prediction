@@ -43,7 +43,6 @@ def get_method_metrics(method):
 
 def get_num_of_called_methods(p_class):
 	n = 0
-	
 	for method in p_class.methods:
 		for _ in method.filter(jl.tree.Invocation):
 			n += 1

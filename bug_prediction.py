@@ -10,17 +10,25 @@ from utils.misc import list_get
 def extract_feature_vectors_gateway(args):
 	from pre_processing import extract_feature_vectors
 	extract_feature_vectors.extract_feature_vectors_argparse(args)
+	
+	
+def label_feature_vectors_gateway(args):
 	pass
 
 
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers()
 
-
 # add subparser for extract_feature_vectors
 p_extract_feature_vectors = subparsers.add_parser('extract_feature_vectors')
 p_extract_feature_vectors.add_argument('-s', '--source', dest='source', default=None)
 p_extract_feature_vectors.set_defaults(func=extract_feature_vectors_gateway)
+
+# add subparser for label_feature_vectors
+p_label_feature_vectors = subparsers.add_parser('label_feature_vectors')
+p_label_feature_vectors.add_argument('-fv', '--feature_vector', dest='fv', default=None)
+p_label_feature_vectors.add_argument('-b', '--buggy_classes', dest='buggy', default=None)
+p_label_feature_vectors.set_defaults(func=label_feature_vectors_gateway)
 
 
 def main(argv):

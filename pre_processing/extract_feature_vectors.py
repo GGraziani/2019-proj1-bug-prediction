@@ -3,7 +3,7 @@ import sys
 import pandas as pd
 
 from utils.misc import write_df_to_csv, gen_name, df_sort_cols
-from utils.pre_processing_utils import *
+from utils.extract_fv_utils import *
 
 
 def extract_feature_vectors(root):
@@ -27,7 +27,7 @@ def extract_feature_vectors(root):
 	path = write_df_to_csv(DEF_FV_DIR, df, gen_name('feature_vector'))
 	print('> Feature vector/s has/ve been written to file "%s"' % os.path.abspath(path))
 	
-	return df, path
+	return df
 		
 		
 # return the maximum CLASS METRICS over all methods
