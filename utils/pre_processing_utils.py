@@ -3,6 +3,21 @@ import javalang as jl
 
 from utils.misc import add_delimiter
 
+DEF_FV_DIR = 'res/feature_vectors'
+FV_COLS = ['class', 'MTH', 'FLD', 'RFC', 'INT', 'SZ', 'CPX', 'EX', 'RET', 'BCM', 'NML', 'WRD', 'DCM']
+
+
+def get_avg_method_name_len(methods):
+	sum_len = 0
+	
+	if len(methods) == 0:
+		return 0
+	
+	for method in methods:
+		sum_len += len(method.name)
+
+	return sum_len / len(methods)
+
 
 # Returns the method metrics for one single metrics
 def get_method_metrics(method):
@@ -32,7 +47,7 @@ def get_num_of_called_methods(p_class):
 	for method in p_class.methods:
 		for _ in method.filter(jl.tree.Invocation):
 			n += 1
-			
+
 	return n
 
 
@@ -42,6 +57,17 @@ def get_num_of_public_methods(p_class):
 		if 'public' in node.modifiers:
 			n += 1
 	return n
+
+
+def get_num_of_statements(methods):
+	num_of_stmts = 0
+	
+	for m in methods:
+		for path, node in m.filter(jl.tree.Statement):
+			if not isinstance(node, jl.tree.BlockStatement):
+				num_of_stmts += 1
+	
+	return num_of_stmts
 
 
 # returns all classes that have the same name as the container java file
