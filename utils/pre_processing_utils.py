@@ -4,13 +4,35 @@ import javalang as jl
 from utils.misc import add_delimiter
 
 
+# Returns the method metrics for one single metrics
+def get_method_metrics(method):
+	sz, cpx, ex, ret = 0, 0, 0, 0
+	
+	for path, node in method:
+		sz += 1 if type(node).__base__ is jl.tree.Statement and type(node) is not jl.tree.BlockStatement else 0
+		
+		cpx += 1 if type(node) in [
+			jl.tree.IfStatement,
+			jl.tree.SwitchStatement,
+			jl.tree.WhileStatement,
+			jl.tree.DoStatement,
+			jl.tree.WhileStatement,
+			jl.tree.ForStatement] else 0
+		
+		ret += 1 if type(node) is jl.tree.ReturnStatement else 0
+		
+		ex += len(node.throws) if type(node) is jl.tree.MethodDeclaration and node.throws is not None else 0
+	
+	return sz, cpx, ex, ret
+
+
 def get_num_of_called_methods(p_class):
 	n = 0
-	for m in p_class.methods:
-		print(len(m.filter(jl.tree.Invocation)))
-		for path, node in m.filter(jl.tree.Invocation):
-			n += 1
 	
+	for method in p_class.methods:
+		for _ in method.filter(jl.tree.Invocation):
+			n += 1
+			
 	return n
 
 
