@@ -1,10 +1,8 @@
 import os
 import sys
 import pandas as pd
-import javalang as jl
 
-from utils.misc import add_delimiter
-from utils.pre_processing_utils import get_tree, get_num_of_public_methods, get_num_of_called_methods
+from utils.pre_processing_utils import get_num_of_public_methods, get_num_of_called_methods, get_top_classes
 
 
 def extract_feature_vectors(root):
@@ -16,32 +14,6 @@ def extract_feature_vectors(root):
 
 		mth, fld, rfc, ints = get_class_metrics(top_class)
 		
-
-# returns all classes that have the same name as the container java file
-def get_top_classes(root):
-	top_classes = []
-	for (path, dirs, files )in os.walk(root):
-		for file in files:
-			if file.endswith(".java"):
-				file_path = add_delimiter(path) + file
-				file_name = file.replace('.java', '')
-
-				top_class = get_top_class(file_path, file_name)
-
-				if top_class is not None:
-					top_classes.append(top_class)
-
-	return top_classes
-
-
-# returns the class having the same name as the container java file
-def get_top_class(file_path, file_name):
-	for path, node in get_tree(file_path).filter(jl.tree.ClassDeclaration):
-		if node.name == file_name:
-			return node
-
-	return None
-
 
 def get_class_metrics(p_class):
 	
