@@ -13,7 +13,13 @@ def extract_feature_vectors_gateway(args):
 	
 	
 def label_feature_vectors_gateway(args):
-	pass
+	from pre_processing import label_feature_vectors
+	label_feature_vectors.label_feature_vectors_argparse(args)
+	
+
+def train_classifiers_gateway(args):
+	from classifiers import train_classifiers
+	train_classifiers.train_classifiers_argparse(args)
 
 
 parser = argparse.ArgumentParser()
@@ -29,6 +35,11 @@ p_label_feature_vectors = subparsers.add_parser('label_feature_vectors')
 p_label_feature_vectors.add_argument('-fv', '--feature_vector', dest='fv', default=None)
 p_label_feature_vectors.add_argument('-b', '--buggy_classes', dest='buggy', default=None)
 p_label_feature_vectors.set_defaults(func=label_feature_vectors_gateway)
+
+# add subparser for label_feature_vectors
+p_train_classifiers = subparsers.add_parser('train_classifiers')
+p_train_classifiers.add_argument('-fv', '--feature_vector', dest='fv', default=None)
+p_train_classifiers.set_defaults(func=train_classifiers_gateway)
 
 
 def main(argv):

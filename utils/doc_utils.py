@@ -7,6 +7,7 @@ by Gustavo Graziani
 Commands:
 {extract_feature_vectors}
 {label_feature_vectors}
+{train_classifiers}
 
 TO SEE DETAILS ON EACH COMMAND, RUN
 > python3 bug_prediction.py <command>
@@ -34,10 +35,21 @@ label_feature_vectors:
 
     flags:
     -fv <path-to-feature-vector> | --feature_vector <path-to-feature-vector>
-        The path to the source code.
+        The path to the feature vector.
         
     -b <path-to-buggy-classes-folder> | --buggy_classes <path-to-buggy-classes-folder>
         The path to the folder containing the buggy classes.
+''',
+    'train_classifiers': '''
+train_classifiers:
+    Given a feature vector, it train the classifiers, prints the average result and save.
+
+    Example usage:
+        $ python3 bug-prediction.py train_classifiers -fv <path-to-feature-vector>
+
+    flags:
+    -fv <path-to-feature-vector> | --feature_vector <path-to-feature-vector>
+        The path to the feature vector.
 '''
 }
 
