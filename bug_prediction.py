@@ -10,17 +10,22 @@ from utils.misc import list_get
 def extract_feature_vectors_gateway(args):
 	from pre_processing import extract_feature_vectors
 	extract_feature_vectors.extract_feature_vectors_argparse(args)
-	
-	
+
+
 def label_feature_vectors_gateway(args):
 	from pre_processing import label_feature_vectors
 	label_feature_vectors.label_feature_vectors_argparse(args)
-	
+
 
 def train_classifiers_gateway(args):
 	from classifiers import train_classifiers
 	train_classifiers.train_classifiers_argparse(args)
 
+
+def evaluation_gateway(args):
+	from evaluation import evaluate
+	evaluate.evaluate_argparse(args)
+	
 
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers()
@@ -38,8 +43,13 @@ p_label_feature_vectors.set_defaults(func=label_feature_vectors_gateway)
 
 # add subparser for label_feature_vectors
 p_train_classifiers = subparsers.add_parser('train_classifiers')
-p_train_classifiers.add_argument('-fv', '--feature_vector', dest='fv', default=None)
+p_train_classifiers.add_argument('-lfv', '--label_feature_vector', dest='fv', default=None)
 p_train_classifiers.set_defaults(func=train_classifiers_gateway)
+
+# add subparser for evaluation
+p_evaluation = subparsers.add_parser('evaluation')
+p_evaluation.add_argument('-lfv', '--label_feature_vector', dest='fv', default=None)
+p_evaluation.set_defaults(func=evaluation_gateway)
 
 
 def main(argv):
