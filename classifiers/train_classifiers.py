@@ -1,18 +1,11 @@
 import os
-import pandas as pd
 import sys
 
 from utils.label_utils import get_dir_time_suffix
-from utils.misc import csv_read_drop_index, write_df_to_csv, indent
+from utils.misc import csv_read_drop_index, write_df_to_csv
 from utils.training_utils import *
 
-from sklearn import tree
-from sklearn.naive_bayes import GaussianNB
-from sklearn import svm
-from sklearn.neural_network import MLPClassifier
-from sklearn.ensemble import RandomForestClassifier
-
-DEF_TR_DIR = 'res/trainings'
+from utils.training_utils import DEF_TR_DIR, CLASSIFIERS
 
 
 def train_classifiers(fv, fv_path):
@@ -22,15 +15,7 @@ def train_classifiers(fv, fv_path):
 	
 	tt, r_num = produce_trainings_and_tests(data, labels)
 	
-	classifiers = {
-		'Decision Tree': tree.DecisionTreeClassifier(criterion="gini", min_impurity_decrease=0.01),
-		'Bayes Gaussian': GaussianNB(),
-		'Linear SVC': svm.LinearSVC(dual=False, C=1),
-		'MLP Classifier': MLPClassifier(hidden_layer_sizes=[100, 100, 100, 100], activation='tanh'),
-		'Random Forest': RandomForestClassifier(criterion="gini", min_impurity_decrease=0.01, n_estimators=100)
-	}
-	
-	run_all_classifiers(classifiers, fv_path, tt, r_num)
+	run_all_classifiers(CLASSIFIERS, fv_path, tt, r_num)
 	
 	
 def run_all_classifiers(classifiers, fv_path, tt, r_num):

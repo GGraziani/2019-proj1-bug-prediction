@@ -1,14 +1,23 @@
-import numpy
-
-import pandas as pd
-
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import precision_recall_fscore_support
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neural_network import MLPClassifier
+from sklearn import tree, svm
+from sklearn.ensemble import RandomForestClassifier
 import matplotlib.pyplot as plt
 
 from utils.misc import indent
 
 T_LOOPS = 70
+DEF_TR_DIR = 'res/trainings'
+
+CLASSIFIERS = {
+		'Decision Tree': tree.DecisionTreeClassifier(criterion="gini", min_impurity_decrease=0.01),
+		'Bayes Gaussian': GaussianNB(),
+		'Linear SVC': svm.LinearSVC(dual=False, C=1),
+		'MLP Classifier': MLPClassifier(hidden_layer_sizes=[100, 100, 100, 100], activation='tanh'),
+		'Random Forest': RandomForestClassifier(criterion="gini", min_impurity_decrease=0.01, n_estimators=100)
+	}
 
 
 # separate classes, data and buggies
