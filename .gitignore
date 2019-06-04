@@ -4,5 +4,5 @@
 __pycache__
 res/defects4j/
 res/feature_vectors/
-
 res/labeled_feature_vectors/
+res/trainings/
