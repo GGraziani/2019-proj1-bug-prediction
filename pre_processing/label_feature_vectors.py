@@ -2,10 +2,8 @@ import os
 import pandas as pd
 import sys
 
-from utils.label_utils import get_fv_time_suffix, get_buggy_classes_in_file
+from utils.label_utils import get_dir_time_suffix, get_buggy_classes_in_file, DEF_LFV_DIR
 from utils.misc import csv_read_drop_index, write_df_to_csv, gen_name_with_suffix
-
-DEF_LFV_DIR = 'res/labeled_feature_vectors'
 
 
 def label_feature_vectors(fv, fv_path, buggy_classes_dir):
@@ -17,7 +15,7 @@ def label_feature_vectors(fv, fv_path, buggy_classes_dir):
 	path = write_df_to_csv(
 		DEF_LFV_DIR,
 		label_feature_vector,
-		gen_name_with_suffix('label_feature_vector', get_fv_time_suffix(fv_path)))
+		gen_name_with_suffix('label_feature_vector', get_dir_time_suffix(fv_path, 'feature_vector')))
 	
 	print('> Labeled feature vector has been written to file "%s"' % os.path.abspath(path))
 	
