@@ -1,4 +1,6 @@
+matplotlib
 numpy
 pandas
 javalang
 argparse
+sklearn
