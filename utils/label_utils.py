@@ -1,6 +1,9 @@
 import os
 
 
+DEF_LFV_DIR = 'res/labeled_feature_vectors'
+
+
 def get_buggy_classes_in_file(path, file):
 	buggy_classes = []
 	if file.endswith(".src"):
@@ -23,5 +26,5 @@ def get_buggy_class_name(line):
 	return class_name
 
 
-def get_fv_time_suffix(path):
-	return os.path.splitext(os.path.basename(path))[0].replace('feature_vector', '')
+def get_dir_time_suffix(path, suffix):
+	return os.path.splitext(os.path.basename(path))[0].replace(suffix, '')

@@ -42,9 +42,9 @@ def csv_read_drop_index(file_path):
 def write_df_to_csv(folder, df, name):
 	if not os.path.exists(folder):
 		os.makedirs(folder)
-
+		
 	file_path = folder + '/' + name + ".csv"
-	
+
 	df.to_csv(file_path)
 	
 	return file_path
