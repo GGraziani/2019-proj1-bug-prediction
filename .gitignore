@@ -3,3 +3,6 @@
 .DS_Store
 __pycache__
 res/defects4j/
+res/feature_vectors/
+
+res/labeled_feature_vectors/
