@@ -2,10 +2,12 @@ import os
 import sys
 import pandas as pd
 import scipy.stats
+from numpy.core.defchararray import capitalize
+from sklearn.metrics import precision_recall_fscore_support
 
 from utils.eval_utils import run_cross_validation, split_and_compute_stats, DEF_EVAL_DIR, make_boxplot_all
 from utils.label_utils import get_dir_time_suffix
-from utils.misc import csv_read_drop_index, write_df_to_csv, indent
+from utils.misc import csv_read_drop_index, write_df_to_csv, indent, mkdir, ones
 from utils.training_utils import split_labeled_fv, CLASSIFIERS
 
 
@@ -19,7 +21,7 @@ def evaluate(fv, fv_path):
 	
 	# add biased estimators
 	metrics['precision']['b_estimator'], metrics['recall']['b_estimator'], metrics['fscore']['b_estimator'] = \
-		gen_biased_estimators(data, labels)
+		gen_metrics_biased_clf(data, labels)
 	
 	# Get evaluation directory
 	eval_dir = DEF_EVAL_DIR + '/' + get_dir_time_suffix(fv_path, 'label_feature_vector-')
@@ -29,13 +31,20 @@ def evaluate(fv, fv_path):
 
 	# run wilcoxon test for each metric
 	run_wilcoxon_test_all(metrics, eval_dir)
+	
+	# Write biased classigier metrics to csv
+	biased_clf_metrics_to_csv(labels, eval_dir)
+	
+	# Compute statistics ("mean", "median" and "standard deviation") of all classifiers metrics and save result to csv
+	compute_stats(metrics, list(CLASSIFIERS.keys())+['b_estimator'], eval_dir)
 
 	
 def run_cross_validation_all(data, labels):
-	print(indent('\n- Running cross validation with 5-folds ...'))
+	print(indent('\n- Running cross validation with 5-folds ...'), end='\n\n')
 	all_prec, all_recall, all_f1 = pd.DataFrame(), pd.DataFrame(), pd.DataFrame()
 	
 	for label, clf in CLASSIFIERS.items():
+		print(indent('* Validating "%s"' % label, spaces=10))
 		df = run_cross_validation(clf, data, labels)
 		all_prec[label] = df['test_precision']
 		all_recall[label] = df['test_recall']
@@ -48,7 +57,7 @@ def run_cross_validation_all(data, labels):
 	}
 
 
-def gen_biased_estimators(data, labels):
+def gen_metrics_biased_clf(data, labels):
 	print(indent('\n- Generating biased estimators ...'))
 	l_prec, l_recall, l_fscore = [], [], []
 
@@ -61,13 +70,14 @@ def gen_biased_estimators(data, labels):
 	return l_prec, l_recall, l_fscore
 
 
-def run_wilcoxon_test_all(metrics, eval_dir):
+def run_wilcoxon_test_all(metrics, folder):
 	
-	path = ''
+	b_folder = mkdir(folder + '/wilcoxon')
+		
 	for key, val in metrics.items():
-		path = run_wilcoxon_test(val, key, eval_dir)
+		run_wilcoxon_test(val, key, b_folder)
 	
-	print(indent('\n- Wilcoxon tests results written to folder "%s"' % path))
+	print(indent('\n- Wilcoxon tests results written to folder "%s"' % b_folder))
 
 
 def run_wilcoxon_test(df, name, folder):
@@ -84,7 +94,46 @@ def run_wilcoxon_test(df, name, folder):
 			
 			t_df.iloc[j, i] = p_value
 	
-	return write_df_to_csv(folder + '/wilcoxon', t_df, name)
+	write_df_to_csv(folder, t_df, name)
+
+
+def biased_clf_metrics_to_csv(labels, folder):
+	
+	prec, rec, fscore, sup = precision_recall_fscore_support(labels, ones(len(labels)), average='binary')
+	df = pd.DataFrame({'precision': prec, 'recall': rec, 'fscore': fscore}, index=[0])
+	
+	out = write_df_to_csv(folder, df, 'biased_metrics')
+	
+	print(indent('\n- Biased classifier metrics ("precision", "recall" and "fscore") written to file "%s"' % out))
+	
+
+def compute_stats(metrics, classifiers, folder):
+	print(indent('\n- Computing metrics statistics ... '), end='')
+	
+	stats = pd.DataFrame(columns=classifiers)
+	
+	for key, val in metrics.items():
+		name = str(capitalize(key))
+		
+		mean = val.mean(axis=0)
+		mean = mean.rename(name+' Mean')
+		stats = stats.append(mean)
+		
+		median = val.median(axis=0)
+		median = median.rename(name+' Median')
+		stats = stats.append(median)
+		
+		std = val.std(axis=0)
+		std = std.rename(name+' Standard Deviation')
+		stats = stats.append(std)
+	
+	print('result:')
+	
+	print(indent(stats.to_string(), spaces=10))
+	
+	out = write_df_to_csv(folder, stats, 'stats')
+	
+	print(indent('\n- Statistics written to file "%s"' % out))
 	
 
 def evaluate_argparse(args):
