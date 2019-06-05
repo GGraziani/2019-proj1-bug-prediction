@@ -5,7 +5,7 @@ import scipy.stats
 
 from utils.eval_utils import run_cross_validation, split_and_compute_stats, make_boxplot, DEF_EVAL_DIR
 from utils.label_utils import get_dir_time_suffix
-from utils.misc import csv_read_drop_index
+from utils.misc import csv_read_drop_index, write_df_to_csv
 from utils.training_utils import split_labeled_fv, CLASSIFIERS
 
 
@@ -27,6 +27,12 @@ def evaluate(fv, fv_path):
 	# create one boxplot for each metric
 	for key, val in metrics.items():
 		path = make_boxplot(val, key, eval_dir)
+
+# 	print write report
+	
+	# run wilcoxon test for each metric
+	for key, val in metrics.items():
+		run_wilcoxon_test(val, key, eval_dir)
 
 	
 def run_cross_validation_all(data, labels):
@@ -56,6 +62,23 @@ def gen_biased_estimators(data, labels):
 
 	return l_prec, l_recall, l_fscore
 
+
+def run_wilcoxon_test(df, name, folder):
+	columns = df.columns.values
+	t_df = pd.DataFrame(columns=columns, index=columns)
+	
+	for i in range(0, len(columns)-1):
+		for j in range(i+1, len(columns)):
+
+			stats, p_value = scipy.stats.mannwhitneyu(
+				df[columns[i]].values,
+				df[columns[j]].values,
+				alternative='two-sided')
+			
+			t_df.iloc[j, i] = p_value
+	
+	write_df_to_csv(folder + '/wilcoxon', t_df, name)
+	
 
 def evaluate_argparse(args):
 	if args.fv is None or not os.path.exists(args.fv):
