@@ -3,9 +3,9 @@ import sys
 import pandas as pd
 import scipy.stats
 
-from utils.eval_utils import run_cross_validation, split_and_compute_stats, make_boxplot, DEF_EVAL_DIR
+from utils.eval_utils import run_cross_validation, split_and_compute_stats, DEF_EVAL_DIR, make_boxplot_all
 from utils.label_utils import get_dir_time_suffix
-from utils.misc import csv_read_drop_index, write_df_to_csv
+from utils.misc import csv_read_drop_index, write_df_to_csv, indent
 from utils.training_utils import split_labeled_fv, CLASSIFIERS
 
 
@@ -21,21 +21,18 @@ def evaluate(fv, fv_path):
 	metrics['precision']['b_estimator'], metrics['recall']['b_estimator'], metrics['fscore']['b_estimator'] = \
 		gen_biased_estimators(data, labels)
 	
-	# Get boxplot directory
+	# Get evaluation directory
 	eval_dir = DEF_EVAL_DIR + '/' + get_dir_time_suffix(fv_path, 'label_feature_vector-')
 	
 	# create one boxplot for each metric
-	for key, val in metrics.items():
-		path = make_boxplot(val, key, eval_dir)
+	make_boxplot_all(metrics, eval_dir)
 
-# 	print write report
-	
 	# run wilcoxon test for each metric
-	for key, val in metrics.items():
-		run_wilcoxon_test(val, key, eval_dir)
+	run_wilcoxon_test_all(metrics, eval_dir)
 
 	
 def run_cross_validation_all(data, labels):
+	print(indent('\n- Running cross validation with 5-folds ...'))
 	all_prec, all_recall, all_f1 = pd.DataFrame(), pd.DataFrame(), pd.DataFrame()
 	
 	for label, clf in CLASSIFIERS.items():
@@ -52,6 +49,7 @@ def run_cross_validation_all(data, labels):
 
 
 def gen_biased_estimators(data, labels):
+	print(indent('\n- Generating biased estimators ...'))
 	l_prec, l_recall, l_fscore = [], [], []
 
 	for i in range(0, 100):
@@ -61,6 +59,15 @@ def gen_biased_estimators(data, labels):
 		l_fscore.append(f1)
 
 	return l_prec, l_recall, l_fscore
+
+
+def run_wilcoxon_test_all(metrics, eval_dir):
+	
+	path = ''
+	for key, val in metrics.items():
+		path = run_wilcoxon_test(val, key, eval_dir)
+	
+	print(indent('\n- Wilcoxon tests results written to folder "%s"' % path))
 
 
 def run_wilcoxon_test(df, name, folder):
@@ -77,7 +84,7 @@ def run_wilcoxon_test(df, name, folder):
 			
 			t_df.iloc[j, i] = p_value
 	
-	write_df_to_csv(folder + '/wilcoxon', t_df, name)
+	return write_df_to_csv(folder + '/wilcoxon', t_df, name)
 	
 
 def evaluate_argparse(args):

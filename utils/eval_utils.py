@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 
 import matplotlib.pyplot as plt
 
-from utils.misc import ones
+from utils.misc import ones, indent
 
 DEF_EVAL_DIR = 'res/evaluations'
 
@@ -33,6 +33,15 @@ def run_cross_validation(clf, data, labels):
 	
 	return df_out
 
+
+def make_boxplot_all(metrics, eval_dir):
+	
+	path = ''
+	for key, val in metrics.items():
+		path = make_boxplot(val, key, eval_dir)
+	
+	print(indent('\n- Boxplots written to folder "%s"' % path))
+	
 
 def make_boxplot(df, title, folder):
 	b_folder = folder + '/boxplots'
