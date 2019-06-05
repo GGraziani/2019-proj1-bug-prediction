@@ -13,7 +13,7 @@ DEF_TR_DIR = 'res/trainings'
 
 CLASSIFIERS = {
 		'Decision Tree': tree.DecisionTreeClassifier(criterion="gini", min_impurity_decrease=0.01),
-		'Bayes Gaussian': GaussianNB(),
+		'Naive Bayes Gaussian': GaussianNB(),
 		'Linear SVC': svm.LinearSVC(dual=False, C=1),
 		'MLP Classifier': MLPClassifier(hidden_layer_sizes=[100, 100, 100, 100], activation='tanh'),
 		'Random Forest': RandomForestClassifier(criterion="gini", min_impurity_decrease=0.01, n_estimators=100)
