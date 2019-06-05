@@ -31,6 +31,10 @@ def list_get(li, index, fallback=None):
 		return li[index]
 	except IndexError:
 		return fallback
+	
+
+def ones(n):
+	return [1] * n
 
 
 def csv_read_drop_index(file_path):
