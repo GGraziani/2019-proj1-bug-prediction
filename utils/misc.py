@@ -13,6 +13,13 @@ def df_sort_cols(df, sorted):
 	return df.reindex(sorted, axis=1)
 
 
+def mkdir(folder):
+	if not os.path.exists(folder):
+		os.makedirs(folder)
+	
+	return folder
+
+
 def gen_name_with_time(name):
 	return name + '-' + str(int(datetime.datetime.now().timestamp()*1000))
 
@@ -44,9 +51,8 @@ def csv_read_drop_index(file_path):
 
 
 def write_df_to_csv(folder, df, name):
-	if not os.path.exists(folder):
-		os.makedirs(folder)
-		
+	mkdir(folder)
+	
 	file_path = folder + '/' + name + ".csv"
 
 	df.to_csv(file_path)
