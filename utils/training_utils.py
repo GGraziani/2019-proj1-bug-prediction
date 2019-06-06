@@ -12,11 +12,11 @@ T_LOOPS = 70
 DEF_TR_DIR = 'res/trainings'
 
 CLASSIFIERS = {
-		'Decision Tree': tree.DecisionTreeClassifier(criterion="gini", min_impurity_decrease=0.01),
+		'Decision Tree': tree.DecisionTreeClassifier(criterion="gini", min_impurity_decrease=0.01, max_depth=2),
 		'Naive Bayes Gaussian': GaussianNB(),
-		'Linear SVC': svm.LinearSVC(dual=False, C=1),
-		'MLP Classifier': MLPClassifier(hidden_layer_sizes=[100, 100, 100, 100], activation='tanh'),
-		'Random Forest': RandomForestClassifier(criterion="gini", min_impurity_decrease=0.01, n_estimators=100)
+		'Linear SVC': svm.LinearSVC(dual=False),
+		'MLP Classifier': MLPClassifier(hidden_layer_sizes=[100, 100, 100, 100], activation='tanh', max_iter=300),
+		'Random Forest': RandomForestClassifier(criterion="gini", min_impurity_decrease=0.0001, n_estimators=500)
 	}
 
 
@@ -31,12 +31,12 @@ def split_labeled_fv(fv):
 
 def print_averages(df):
 	averages = df[['accuracy', 'precision', 'recall', 'fscore']].mean(axis=0)
-	
+
 	print(indent('\nPrinting averages:', spaces=10))
-	
+
 	for label, avg in averages.iteritems():
 		print(indent('* Average %s: %s' % (label, str(avg)), spaces=14))
-		
+
 
 def produce_trainings_and_tests(data, labels):
 	x_trains, x_tests, y_trains, y_tests, r_num = [], [], [], [], []
@@ -49,8 +49,8 @@ def produce_trainings_and_tests(data, labels):
 		x_tests.append(x_test)
 		y_trains.append(y_train)
 		y_tests.append(y_test)
-		r += 1
 		r_num.append(r)
+		r += 1
 	
 	return {'x_trains': x_trains, 'x_tests': x_tests, 'y_trains': y_trains, 'y_tests': y_tests}, r_num
 
@@ -60,7 +60,7 @@ def make_plot(x, data, title, folder):
 	plt.title(title)
 	
 	plt.xlabel('Run')
-	plt.ylabel('Accuracies')
+	plt.ylabel('Metrics')
 	for col in data.columns:
 		plt.plot(x, data[col].values,	marker='o', markersize=4, label=col)
 	

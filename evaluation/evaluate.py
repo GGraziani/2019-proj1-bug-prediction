@@ -19,12 +19,15 @@ def evaluate(fv, fv_path):
 	# Run 5-fold cross-validation
 	metrics = run_cross_validation_all(data, labels)
 	
-	# add biased estimators
+	# add biased classifier
 	metrics['precision']['b_estimator'], metrics['recall']['b_estimator'], metrics['fscore']['b_estimator'] = \
 		gen_metrics_biased_clf(data, labels)
 	
 	# Get evaluation directory
 	eval_dir = DEF_EVAL_DIR + '/' + get_dir_time_suffix(fv_path, 'label_feature_vector-')
+	
+	# Compute statistics ("mean", "median" and "standard deviation") of all classifiers metrics and save result to csv
+	compute_stats(metrics, list(CLASSIFIERS.keys()) + ['b_estimator'], eval_dir)
 	
 	# create one boxplot for each metric
 	make_boxplot_all(metrics, eval_dir)
@@ -32,11 +35,10 @@ def evaluate(fv, fv_path):
 	# run wilcoxon test for each metric
 	run_wilcoxon_test_all(metrics, eval_dir)
 	
-	# Write biased classigier metrics to csv
+	# Write biased classifier metrics to csv
 	biased_clf_metrics_to_csv(labels, eval_dir)
 	
-	# Compute statistics ("mean", "median" and "standard deviation") of all classifiers metrics and save result to csv
-	compute_stats(metrics, list(CLASSIFIERS.keys())+['b_estimator'], eval_dir)
+	
 
 	
 def run_cross_validation_all(data, labels):
